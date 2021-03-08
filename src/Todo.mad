@@ -1,0 +1,69 @@
+import {} from "Number"
+import {} from "List"
+import { Wish, after, bad, good } from "Wish"
+
+import {
+  Action,
+  View,
+  id,
+  h1,
+  onInput,
+  button,
+  div,
+  input,
+  className,
+  ClickEvent,
+  onClick,
+  onMouseOver,
+  onMouseOut,
+  text,
+  value,
+  placeholder,
+  InputEvent,
+  render,
+  inputType,
+  li,
+  ul
+} from "MadUI"
+
+import { always } from "Function"
+
+
+alias State = { input :: String, checked :: Boolean, lastEventType :: String, todos :: List String }
+
+initialState :: State
+initialState = { input: "initial", checked: false, lastEventType: "-", todos: [] }
+
+
+handleInput :: Action State
+handleInput = (state, event) => where(event)
+  is InputEvent e: [of(always({ ...state, input: e.target.value, lastEventType: e.eventType }))]
+
+handleClick :: Action State
+handleClick = (state, event) => where(event)
+  is ClickEvent e: [of(always({ ...state, lastEventType: e.eventType }))]
+
+addTodo :: Action State
+addTodo = (_, __) => [
+  of((s) => pipe(
+    .input,
+    where 
+      is ""  : s
+      is todo: { ...s, todos: mappend(s.todos, [todo]), input: "" }
+  )(s))
+]
+
+MyApp :: View State
+MyApp = (state) =>
+  <div id="id" className="class">
+    <h1>{"title"}</h1>
+    <input value={state.input} onInput={handleInput} onClick={handleClick} placeholder="PH" />
+    <input value="Add" inputType="button" onClick={addTodo} />
+    <div>{[text(state.input)]}</div>
+    <div>{[text(state.lastEventType)]}</div>
+    <ul>
+      {map((todo) => <li>{`${todo}`}</li>, state.todos)}
+    </ul>
+  </div>
+
+render(MyApp, initialState, "app")
