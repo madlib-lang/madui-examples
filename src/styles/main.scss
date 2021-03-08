@@ -1,0 +1,236 @@
+/* Nested selectors, rucksack shortcuts & cssnext enabled, go wild! */
+
+/*------------------------------------*\
+    Global css
+\*------------------------------------*/
+
+:root {
+  --text-color: #ffffff;
+  --background-color: #323232;
+  --accent-color: #06d19c;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.container {
+  min-height: calc(100vh - 3rem);
+  padding: 15vh 1rem;
+  width: 100%;
+  max-width: 992px;
+  margin: 0 auto;
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+}
+
+a {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  &:hover {
+    color: var(--accent-color);
+  }
+}
+
+pre {
+  font-size: 0.85rem;
+}
+button,
+input,
+select,
+textarea {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  &:focus {
+    outline: none;
+  }
+}
+
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3rem;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  &:focus {
+    /* border: 0.05rem solid var(--accent-color); */
+  }
+}
+
+button {
+  cursor: pointer;
+  padding: 0.5rem;
+  &:hover {
+    color: var(--accent-color);
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+svg {
+  fill: none;
+}
+
+::selection {
+  background: var(--accent-color);
+  color: var(--background-color);
+}
+
+/*------------------------------------*\
+      Card layout
+  \*------------------------------------*/
+
+.card {
+  padding: 1rem;
+  background-color: #1a1a1a;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  min-height: 420px;
+  .left {
+    width: 50%;
+    padding: 1rem;
+    text-align: center;
+  }
+  .right {
+    width: 50%;
+    .info {
+      padding: 1rem;
+      margin: auto 0 0 0;
+      font-size: 0.67rem;
+      opacity: 0.67;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+  @media (max-width: 768px) {
+    border-radius: 0;
+    flex-direction: column;
+    .left,
+    .right {
+      width: 100%;
+    }
+  }
+}
+
+/*------------------------------------*\
+      Todo list widget
+  \*------------------------------------*/
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #212121;
+  min-height: 320px;
+  > .new-item-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  > h4 {
+    padding: 0 0.5rem;
+  }
+  > .list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    > .item {
+      overflow: hidden;
+      border-radius: 3rem;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+      > .inner {
+        padding-left: 10px;
+        display: flex;
+        align-items: stretch;
+        &.done {
+          opacity: 0.5;
+        }
+        > .name {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          padding: 0 0.5rem;
+          cursor: text;
+        }
+      }
+    }
+  }
+}
+
+.cross-icon {
+  font-size: 52px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  height: 20px;
+  position: relative;
+  top: -23px;
+}
+
+.delete {
+  height: 0;
+}
+
+.check {
+  font-weight: 400;
+  font-size: 42px;
+  height: 45px;
+  position: relative;
+  top: -10px;
+}
+
+/*------------------------------------*\
+      State viewer
+  \*------------------------------------*/
+
+.state-viewer {
+  margin: 3rem 0;
+  text-align: center;
+  > a {
+    font-size: 0.67rem;
+  }
+  > pre {
+    text-align: left;
+    padding: 1rem;
+    background-color: #212121;
+    border-radius: 1rem;
+  }
+  @media (max-width: 768px) {
+    > pre {
+      border-radius: 0;
+    }
+  }
+}

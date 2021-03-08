@@ -1,5 +1,5 @@
 import {} from "Number"
-import {} from "List"
+import { len } from "List"
 import { Wish, after, bad, good } from "Wish"
 
 import {
@@ -7,9 +7,11 @@ import {
   View,
   id,
   h1,
+  h4,
   onInput,
   button,
   div,
+  span,
   input,
   className,
   ClickEvent,
@@ -22,26 +24,24 @@ import {
   InputEvent,
   render,
   inputType,
+  form,
   li,
+  p,
   ul
 } from "MadUI"
 
 import { always } from "Function"
 
 
-alias State = { input :: String, checked :: Boolean, lastEventType :: String, todos :: List String }
+alias State = { input :: String, todos :: List String }
 
 initialState :: State
-initialState = { input: "initial", checked: false, lastEventType: "-", todos: [] }
+initialState = { input: "", todos: [] }
 
 
 handleInput :: Action State
 handleInput = (state, event) => where(event)
-  is InputEvent e: [of(always({ ...state, input: e.target.value, lastEventType: e.eventType }))]
-
-handleClick :: Action State
-handleClick = (state, event) => where(event)
-  is ClickEvent e: [of(always({ ...state, lastEventType: e.eventType }))]
+  is InputEvent e: [of(always({ ...state, input: e.target.value }))]
 
 addTodo :: Action State
 addTodo = (_, __) => [
@@ -55,15 +55,35 @@ addTodo = (_, __) => [
 
 MyApp :: View State
 MyApp = (state) =>
-  <div id="id" className="class">
-    <h1>{"title"}</h1>
-    <input value={state.input} onInput={handleInput} onClick={handleClick} placeholder="PH" />
-    <input value="Add" inputType="button" onClick={addTodo} />
-    <div>{[text(state.input)]}</div>
-    <div>{[text(state.lastEventType)]}</div>
-    <ul>
-      {map((todo) => <li>{`${todo}`}</li>, state.todos)}
-    </ul>
+  <div className="container">
+    <div className="card">
+      <div className="left">
+        <h1>{"Todo list"}</h1>
+        <p>{"powered by Madlib / MadUI"}</p>
+      </div>
+      <div className="right">
+        <div className="todo-list">
+          <div className="new-item-form">
+            <input value={state.input} inputType="text" onInput={handleInput} placeholder="Todo" />
+            <button onClick={addTodo}>{"Add"}</button>
+          </div>
+          <h4>{`${show(len(state.todos))} items`}</h4>
+          <ul className="list">
+            {map(renderTodo, state.todos)}
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
+
+renderTodo :: View String
+renderTodo = (todo) =>
+  <li className="item">
+    <div className="inner">
+      <span className="check">{"⚬"}</span>
+      <div className="name"><span>{`${todo}`}</span></div>
+      <button className="delete"><span className="cross-icon">{"⨯"}</span></button>
+    </div>
+  </li>
 
 render(MyApp, initialState, "app")
