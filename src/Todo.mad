@@ -1,6 +1,7 @@
 import {} from "Number"
-import { len } from "List"
-import { Wish, after, bad, good } from "Wish"
+import { len, slice, nth, filter } from "List"
+import { Wish, after, bad, good, mapRej } from "Wish"
+import { fromMaybe } from "Maybe"
 
 import {
   Action,
@@ -27,13 +28,57 @@ import {
   form,
   li,
   p,
+  header,
+  main,
+  section,
+  aside,
+  onKeyPress,
+  KeyPressEvent,
+  KEY_ENTER,
+  Key,
+  key,
+  empty,
   ul
 } from "MadUI"
 
+import IO from "IO"
 import { always } from "Function"
 
 
-alias State = { input :: String, todos :: List String }
+mapWithIndex :: (a -> Number -> b) -> List a -> List b
+mapWithIndex = (f, list) => {
+  mapper = (i, ff, xs) => where(xs)
+    is [item, ...next]: [ff(item, i), ...mapper(i + 1, ff, next)]
+    is [item]         : [ff(item, i)]
+    is []             : []
+
+  return mapper(0, f, list)
+}
+
+remove :: Number -> List a -> List a
+remove = (index, xs) => [...slice(0, index, xs), ...slice(index + 1, len(xs), xs)]
+
+
+naiveUUID :: Number -> Wish String String
+export naiveUUID = (seed) => #-{
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  return good(uuid)
+}-#
+
+
+
+type Todo = Todo { text :: String, checked :: Boolean, id :: String }
+
+alias State = { input :: String, todos :: List Todo }
+
+getText :: Todo -> String
+getText = where is Todo { text: t }: t
+
+getChecked :: Todo -> Boolean
+getChecked = where is Todo { checked }: checked
 
 initialState :: State
 initialState = { input: "", todos: [] }
@@ -43,47 +88,121 @@ handleInput :: Action State
 handleInput = (state, event) => where(event)
   is InputEvent e: [of(always({ ...state, input: e.target.value }))]
 
+
 addTodo :: Action State
-addTodo = (_, __) => [
-  of((s) => pipe(
-    .input,
-    where 
-      is ""  : s
-      is todo: { ...s, todos: mappend(s.todos, [todo]), input: "" }
-  )(s))
+addTodo = (_, event) => where(event)
+  is KeyPressEvent { key: k }:
+    if (k == KEY_ENTER) {[
+      pipe(
+        naiveUUID,
+        mapRej((_) => ((s) => s)),
+        chain((uuid) => of((s) => pipe(
+          .input,
+          where {
+            is ""  : s
+            is txt: {
+              ...s,
+              todos: mappend(s.todos, [Todo({ text: txt, checked: false, id: uuid })])
+              , input: ""
+            }
+          }
+        )(s)))
+      )(0)
+    ]} else { [] }
+  is _: []
+
+
+deleteTodo :: Number -> Action State
+deleteTodo = (index, _, __) => [
+  of((s) => ({
+    ...s,
+    todos: remove(index, s.todos),
+  }))
 ]
 
-MyApp :: View State
-MyApp = (state) =>
-  <div className="container">
-    <div className="card">
-      <div className="left">
-        <h1>{"Todo list"}</h1>
-        <p>{"powered by Madlib / MadUI"}</p>
-      </div>
-      <div className="right">
-        <div className="todo-list">
-          <div className="new-item-form">
-            <input value={state.input} inputType="text" onInput={handleInput} placeholder="Todo" />
-            <button onClick={addTodo}>{"Add"}</button>
-          </div>
-          <h4>{`${show(len(state.todos))} items`}</h4>
-          <ul className="list">
-            {map(renderTodo, state.todos)}
-          </ul>
-        </div>
-      </div>
-    </div>
+toggleTodo :: Number -> Action State
+toggleTodo = (index, _, __) => [
+  of((state) => pipe(
+    .todos,
+    nth(index),
+    fromMaybe(Todo({ text: "Oups", checked: false, id: "-" })),
+    where is Todo t: Todo({ ...t, checked: !t.checked }),
+    (toggled) => ({
+      ...state,
+      todos: [
+        ...slice(0, index, state.todos),
+        toggled,
+        ...slice(index + 1, len(state.todos), state.todos),
+      ]
+    })
+  )(state))
+]
+
+TodoApp :: View State
+TodoApp = (state) =>
+  <div>
+    <header>
+      <h1 className="title">{"todos"}</h1>
+    </header>
+    <main className="todo-list">
+      <section>
+        <input
+          value={state.input}
+          onInput={handleInput}
+          onKeyPress={addTodo}
+          inputType="text"
+          className="todo-list__add-textfield"
+          placeholder="What needs to be done?"
+        />
+      </section>
+      <section className="todo-list__items">
+        <ul>
+          {mapWithIndex(renderTodo, state.todos)}
+        </ul>
+      </section>
+      <section className="todo-list__footer">
+        {[renderFooter(state)]}
+      </section>
+    </main>
   </div>
 
-renderTodo :: View String
-renderTodo = (todo) =>
-  <li className="item">
+renderTodo :: Todo -> View Number
+renderTodo = (todo, index) =>
+  <li className="todo" key={getText(todo)}>
     <div className="inner">
-      <span className="check">{"⚬"}</span>
-      <div className="name"><span>{`${todo}`}</span></div>
-      <button className="delete"><span className="cross-icon">{"⨯"}</span></button>
+      <span>{[renderCheck(getChecked(todo), index)]}</span>
+      <span
+        className={`todo__name ${getChecked(todo) ? "todo__name--checked" : ''}`}
+      >
+        {`${getText(todo)}`}
+      </span>
+      <button className="todo__delete-button" onClick={deleteTodo(index)}>
+        {"╳"}
+      </button>
     </div>
   </li>
 
-render(MyApp, initialState, "app")
+renderCheck :: Boolean -> View Number
+renderCheck = (checked, index) => checked
+  ? <button className="todo__check todo__check--checked" onClick={toggleTodo(index)}>
+      {"⬤"}
+    </button>
+  : <button className="todo__check" onClick={toggleTodo(index)}>{"◯"}</button>
+
+renderFooter :: View State
+renderFooter = (state) => {
+  todoCount = len(state.todos)
+  todoCheckedCount = pipe(filter(where is Todo { checked }: !checked), len)(state.todos)
+  todoItems = todoCheckedCount > 1 ? "items" : "item"
+
+  return todoCount == 0
+    ? <empty />
+    : (
+      <div className="">
+        {`${show(todoCheckedCount)} ${todoItems} left`}
+      </div>
+    )
+}
+
+
+render(TodoApp, initialState, "app")

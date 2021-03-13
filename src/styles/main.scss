@@ -1,236 +1,134 @@
-/* Nested selectors, rucksack shortcuts & cssnext enabled, go wild! */
+@import "reset.scss";
 
-/*------------------------------------*\
-    Global css
-\*------------------------------------*/
+$background-color: #f5f5f5;
+$title-color: rgba(175, 47, 47, 0.15);
+$dark-grey: #4d4d4d;
+$light-grey: #dddddd;
+$button-color: #cc9a9a;
+$button-active-color: #af5b5e;
 
-:root {
-  --text-color: #ffffff;
-  --background-color: #323232;
-  --accent-color: #06d19c;
-}
-
-html {
-  width: 100%;
-  height: 100%;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 22px;
-  color: var(--text-color);
-  background-color: var(--background-color);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+input:focus,
+button:focus {
+  outline: none;
 }
 
 body {
-  position: relative;
-  overflow-x: hidden;
-}
-
-.container {
-  min-height: calc(100vh - 3rem);
-  padding: 15vh 1rem;
-  width: 100%;
-  max-width: 992px;
+  background-color: $background-color;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  color: $dark-grey;
+  // line-height: 1.4em;
+  min-width: 230px;
+  max-width: 550px;
   margin: 0 auto;
-  @media (max-width: 768px) {
-    padding: 0;
-  }
+  --webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  &:hover {
-    color: var(--accent-color);
-  }
+.title {
+  text-align: center;
+  font-size: 100px;
+  color: $title-color;
+  font-weight: 100;
+  margin: 20px 0 30px 0;
 }
-
-pre {
-  font-size: 0.85rem;
-}
-button,
-input,
-select,
-textarea {
-  background-color: transparent;
-  border: none;
-  color: inherit;
-  &:focus {
-    outline: none;
-  }
-}
-
-input[type="email"],
-input[type="number"],
-input[type="search"],
-input[type="text"],
-input[type="tel"],
-input[type="url"],
-input[type="password"] {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3rem;
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-  &:focus {
-    /* border: 0.05rem solid var(--accent-color); */
-  }
-}
-
-button {
-  cursor: pointer;
-  padding: 0.5rem;
-  &:hover {
-    color: var(--accent-color);
-  }
-}
-
-img {
-  max-width: 100%;
-}
-
-svg {
-  fill: none;
-}
-
-::selection {
-  background: var(--accent-color);
-  color: var(--background-color);
-}
-
-/*------------------------------------*\
-      Card layout
-  \*------------------------------------*/
-
-.card {
-  padding: 1rem;
-  background-color: #1a1a1a;
-  border-radius: 1rem;
-  display: flex;
-  align-items: center;
-  min-height: 420px;
-  .left {
-    width: 50%;
-    padding: 1rem;
-    text-align: center;
-  }
-  .right {
-    width: 50%;
-    .info {
-      padding: 1rem;
-      margin: auto 0 0 0;
-      font-size: 0.67rem;
-      opacity: 0.67;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-  @media (max-width: 768px) {
-    border-radius: 0;
-    flex-direction: column;
-    .left,
-    .right {
-      width: 100%;
-    }
-  }
-}
-
-/*------------------------------------*\
-      Todo list widget
-  \*------------------------------------*/
 
 .todo-list {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 1rem;
-  border-radius: 1rem;
-  background-color: #212121;
-  min-height: 320px;
-  > .new-item-form {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  > h4 {
-    padding: 0 0.5rem;
-  }
-  > .list {
-    list-style: none;
-    padding: 0;
-    margin-top: 0;
-    > .item {
-      overflow: hidden;
-      border-radius: 3rem;
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-      > .inner {
-        padding-left: 10px;
-        display: flex;
-        align-items: stretch;
-        &.done {
-          opacity: 0.5;
-        }
-        > .name {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          padding: 0 0.5rem;
-          cursor: text;
-        }
-      }
-    }
-  }
+  background: #fff;
+  margin: 0 0 40px 0;
+  position: relative;
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);
 }
 
-.cross-icon {
-  font-size: 52px;
-  line-height: 1;
+.todo-list__add-textfield {
+  padding: 16px 16px 16px 60px;
+  border: none;
+  background: rgba(0, 0, 0, 0.003);
+  box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
+  position: relative;
   margin: 0;
-  padding: 0;
-  height: 20px;
-  position: relative;
-  top: -23px;
-}
+  width: 100%;
+  font-size: 24px;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: 1.4em;
+  color: inherit;
+  box-sizing: border-box;
 
-.delete {
-  height: 0;
-}
-
-.check {
-  font-weight: 400;
-  font-size: 42px;
-  height: 45px;
-  position: relative;
-  top: -10px;
-}
-
-/*------------------------------------*\
-      State viewer
-  \*------------------------------------*/
-
-.state-viewer {
-  margin: 3rem 0;
-  text-align: center;
-  > a {
-    font-size: 0.67rem;
+  &::placeholder {
+    color: $light-grey;
+    font-style: italic;
+    font-weight: 100;
   }
-  > pre {
-    text-align: left;
-    padding: 1rem;
-    background-color: #212121;
-    border-radius: 1rem;
+}
+
+.todo-list__items {
+  > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  @media (max-width: 768px) {
-    > pre {
-      border-radius: 0;
-    }
+}
+
+.todo {
+  position: relative;
+  font-size: 24px;
+  border-bottom: 1px solid #ededed;
+}
+
+.todo__name {
+  display: inline-block;
+  word-break: break-all;
+  padding: 15px 15px 15px 60px;
+  line-height: 1.2;
+  transition: color 0.4s;
+
+  &--checked {
+    color: $light-grey;
+    text-decoration: line-through;
+  }
+}
+
+.todo__delete-button {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  background: none;
+  border: none;
+  font-size: 21px;
+  color: $button-color;
+  cursor: pointer;
+
+  &:hover {
+    color: $button-active-color;
+  }
+}
+
+.todo__check {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: $light-grey;
+  position: absolute;
+  left: 2px;
+  top: 7px;
+  cursor: pointer;
+
+  &--checked {
+    font-size: 26px;
+    position: absolute;
+    top: 8px;
+    left: 0px;
+  }
+}
+
+.todo-list__footer {
+  box-shadow: 0 1px 1px rgb(0 0 0 / 20%), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgb(0 0 0 / 20%),
+    0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgb(0 0 0 / 20%);
+
+  > div {
+    color: #777;
+    padding: 10px 15px;
+    height: 20px;
+    text-align: center;
   }
 }
